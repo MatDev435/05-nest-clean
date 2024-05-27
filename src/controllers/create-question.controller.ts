@@ -13,6 +13,8 @@ const createQuestionSchema = z.object({
 
 type CreateQuestionSchema = z.infer<typeof createQuestionSchema>
 
+const zodValidationPipe = new ZodValidationPipe(createQuestionSchema)
+
 @Controller('/questions')
 @UseGuards(JwtAuthGuard)
 export class CreateQuestionController {
@@ -20,8 +22,7 @@ export class CreateQuestionController {
 
   @Post()
   async handle(
-    @Body(new ZodValidationPipe(createQuestionSchema))
-    body: CreateQuestionSchema,
+    @Body(zodValidationPipe) body: CreateQuestionSchema,
     @CurrentUser() user: UserPayload,
   ) {
     const { title, content } = body

@@ -6,8 +6,8 @@ POST {{baseUrl}}/accounts
 Content-Type: application/json
 
 {
-    "name": "Matheus5",
-    "email": "matheus5@example.com",
+    "name": "Matheus6",
+    "email": "matheus6@example.com",
     "password": "123456"
 }
 

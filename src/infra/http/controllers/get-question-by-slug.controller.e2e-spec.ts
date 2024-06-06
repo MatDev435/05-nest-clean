@@ -2,44 +2,42 @@ import { INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { Test } from '@nestjs/testing'
 import { AppModule } from '@/infra/app.module'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { JwtService } from '@nestjs/jwt'
+import { QuestionFactory } from 'test/factories/make-question'
+import { StudantFactory } from 'test/factories/make-studant'
+import { Slug } from '@/domain/forum/enterprise/entities/value-objects/slug'
+import { DatabaseModule } from '@/infra/database/database.module'
 
 describe('Get Question By Slug (E2E)', () => {
   let app: INestApplication
-  let prisma: PrismaService
+  let studantFactory: StudantFactory
+  let questionFactory: QuestionFactory
   let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, DatabaseModule],
+      providers: [StudantFactory, QuestionFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
-    prisma = moduleRef.get(PrismaService)
+
+    studantFactory = moduleRef.get(StudantFactory)
+    questionFactory = moduleRef.get(QuestionFactory)
     jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
   test('[GET] /questions/:slug', async () => {
-    const user = await prisma.user.create({
-      data: {
-        name: 'John Doe',
-        email: 'johndoe@example.com',
-        password: '123456',
-      },
-    })
+    const user = await studantFactory.makePrismaStudant()
 
-    const accessToken = jwt.sign({ sub: user.id })
+    const accessToken = jwt.sign({ sub: user.id.toString() })
 
-    await prisma.question.create({
-      data: {
-        title: 'Question 01',
-        slug: 'question-01',
-        content: 'Question content',
-        authorId: user.id,
-      },
+    await questionFactory.makePrismaQuestion({
+      authorId: user.id,
+      title: 'Question 01',
+      slug: Slug.create('question-01'),
     })
 
     const response = await request(app.getHttpServer())

@@ -8,7 +8,7 @@ import { StudantFactory } from 'test/factories/make-studant'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { QuestionFactory } from 'test/factories/make-question'
 
-describe('Create Question (E2E)', () => {
+describe('Edit Question (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let studantFactory: StudantFactory

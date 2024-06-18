@@ -5,5 +5,5 @@ export interface UploadParams {
 }
 
 export abstract class Uploader {
-  abstract upload(params: UploadParams): Promise<{ url }>
+  abstract upload(params: UploadParams): Promise<{ url: string }>
 }

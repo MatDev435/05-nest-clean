@@ -35,7 +35,7 @@ export class R2Storage implements Uploader {
     await this.client.send(
       new PutObjectCommand({
         Bucket: this.envService.get('AWS_BUCKET_NAME'),
-        key: uniqueFileName,
+        Key: uniqueFileName,
         ContentType: fileType,
         Body: body,
       }),

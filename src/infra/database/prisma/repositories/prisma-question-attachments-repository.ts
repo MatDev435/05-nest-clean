@@ -17,9 +17,7 @@ export class PrismaQuestionAttachmentsRepository
 
     const data = PrismaQuestionAttachmentMapper.toPrismaUpdateMany(attachments)
 
-    await this.prisma.attachment.updateMany({
-      data,
-    })
+    await this.prisma.attachment.updateMany(data)
   }
 
   async deleteMany(attachments: QuestionAttachment[]): Promise<void> {

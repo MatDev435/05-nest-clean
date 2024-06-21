@@ -1,14 +1,8 @@
-import { UniqueEntityID } from './unique-entity-id'
-
 export abstract class ValueObject<Props> {
   protected props: Props
 
   protected constructor(props: Props) {
     this.props = props
-  }
-
-  get id() {
-    return this._id
   }
 
   public equals(vo: ValueObject<unknown>) {

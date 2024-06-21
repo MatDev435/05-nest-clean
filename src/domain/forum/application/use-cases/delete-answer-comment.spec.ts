@@ -3,13 +3,18 @@ import { makeAnswerComments } from 'test/factories/make-answer-comment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { InMemoryAnswerCommentsCommentsRepository } from 'test/repositories/in-memory-answer-comments-repository'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
+import { InMemoryStudantsRepository } from 'test/repositories/in-memory-studants-repository'
 
+let inMemoryStudantsRepository: InMemoryStudantsRepository
 let inMemoryAnswerComments: InMemoryAnswerCommentsCommentsRepository
 let sut: DeleteAnswerCommentUseCase
 
 describe('Delete Answer Comment Use Case', () => {
   beforeEach(() => {
-    inMemoryAnswerComments = new InMemoryAnswerCommentsCommentsRepository()
+    inMemoryStudantsRepository = new InMemoryStudantsRepository()
+    inMemoryAnswerComments = new InMemoryAnswerCommentsCommentsRepository(
+      inMemoryStudantsRepository,
+    )
     sut = new DeleteAnswerCommentUseCase(inMemoryAnswerComments)
   })
 

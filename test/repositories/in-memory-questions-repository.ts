@@ -61,7 +61,7 @@ export class InMemoryQuestionsRepository implements QuestionsRepository {
 
     const attachments = questionAttachments.map((questionAttachment) => {
       const attachment = this.attachmentsRepository.items.find((attachment) => {
-        return attachment.id.equals(questionAttachment.id)
+        return attachment.id.equals(questionAttachment.attachmentId)
       })
 
       if (!attachment) {

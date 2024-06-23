@@ -7,20 +7,22 @@ import { JwtService } from '@nestjs/jwt'
 import { StudantFactory } from 'test/factories/make-studant'
 import { DatabaseModule } from '@/infra/database/database.module'
 import { QuestionFactory } from 'test/factories/make-question'
-import { waitFor } from 'test/utils/wait-for'
+import { AnswerFactory } from 'test/factories/make-answer'
 import { DomainEvents } from '@/core/events/domain-events'
+import { waitFor } from 'test/utils/wait-for'
 
-describe('On Answer Created (E2E)', () => {
+describe('On Question Best Answer Chosen (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let studantFactory: StudantFactory
   let questionFactory: QuestionFactory
+  let answerFactory: AnswerFactory
   let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [StudantFactory, QuestionFactory],
+      providers: [StudantFactory, QuestionFactory, AnswerFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
@@ -28,6 +30,7 @@ describe('On Answer Created (E2E)', () => {
     prisma = moduleRef.get(PrismaService)
     studantFactory = moduleRef.get(StudantFactory)
     questionFactory = moduleRef.get(QuestionFactory)
+    answerFactory = moduleRef.get(AnswerFactory)
     jwt = moduleRef.get(JwtService)
 
     DomainEvents.shouldRun = true
@@ -35,7 +38,7 @@ describe('On Answer Created (E2E)', () => {
     await app.init()
   })
 
-  it('should send a notification when answer is created', async () => {
+  test('should send a notification when question best answer is chosen', async () => {
     const user = await studantFactory.makePrismaStudant()
 
     const accessToken = jwt.sign({ sub: user.id.toString() })
@@ -44,14 +47,19 @@ describe('On Answer Created (E2E)', () => {
       authorId: user.id,
     })
 
-    const questionId = question.id.toString()
+    const answer = await answerFactory.makePrismaAnswer({
+      questionId: question.id,
+      authorId: user.id,
+    })
+
+    const answerId = answer.id.toString()
 
     await request(app.getHttpServer())
-      .post(`/questions/${questionId}/answers`)
+      .patch(`/answers/${answerId}/choose-as-best`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        content: 'New answer',
-        attachments: [],
+        title: 'New title',
+        content: 'New content',
       })
 
     await waitFor(async () => {

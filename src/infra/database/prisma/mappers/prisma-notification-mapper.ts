@@ -24,6 +24,7 @@ export class PrismaNotificationMapper {
       recipientId: notification.recipientId.toString(),
       title: notification.title,
       content: notification.content,
+      readAt: notification.readAt,
       createdAt: notification.createdAt,
     }
   }
